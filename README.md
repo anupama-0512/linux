@@ -50,8 +50,11 @@ IA32_VMX_PROCBASED_CTLS2 0x48B IA32_VMX_PROCBASED_CTLS3 0x492
 ## Screenshots of Output
 
 ![Screenshot 1](outputImages/img1.png)
+
 ![Screenshot 2](outputImages/img2.png)
+
 ![Screenshot 3](outputImages/img3.png)
+
 
 
 
