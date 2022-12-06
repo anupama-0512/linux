@@ -49,9 +49,9 @@ IA32_VMX_PROCBASED_CTLS2 0x48B IA32_VMX_PROCBASED_CTLS3 0x492
 
 ## Screenshots of Output
 
-![Screenshot 1](img1.png)
-![Screenshot 2](img2.png)
-![Screenshot 3](img3.png)
+![Screenshot 1](outputImages/img1.png)
+![Screenshot 2](outputImages/img2.png)
+![Screenshot 3](outputImages/img3.png)
 
 
 
@@ -63,11 +63,5 @@ IA32_VMX_PROCBASED_CTLS2 0x48B IA32_VMX_PROCBASED_CTLS3 0x492
 
 
 
-## Contents
 
-1. [Short description](#short-description)
-1. [Setup](#setup)
-1. [Built with](#built-with)
-1. [Authors](#authors)
-1. [References](#references)
-1. [Dataset](#dataset)
+
