@@ -26,6 +26,80 @@
 #include "trace.h"
 #include "pmu.h"
 
+//Start : CMPE283 Assignment 2
+static char exit_name[69][100] = {
+	"EXCEPTION_NMI",
+	"EXCEPTION_INTERRUPT",
+	"TRIPLE_FAULT",
+	"INIT_SIGNAL_NA",
+	"STARTUP_IPI_NA",
+	"SMI_INTERRUPT_NA",
+	"EOI_INDUCED",
+	"PENDING_INTERRUPT",
+	"NMI_WINDOW",
+	"TASK_SWITCH",
+	"CPUID",
+	"GETSEC_NA",
+	"HLT",
+	"INVD",
+	"INVLPG",
+	"RDPMC",
+	"RDTSC_NA",
+	"RSM_NA",
+	"VMCALL",
+	"VMCLEAR",
+	"VMLAUNCH",
+	"VMPTRLD",
+	"VMPTRST",
+	"VMREAD",
+	"VMRESUME",
+	"VMWRITE",
+	"VMOFF",
+	"VMON",
+	"CR_ACCESS",
+	"DR_ACCESS",
+	"IO_INSTRUCTION",
+	"MSR_READ",
+	"MSR_WRITE",
+	"VM_ENTRY_FAILURE_INVALID_GUEST_NA",
+	"VM_ENTRY_FAILURE_MSR_LOADING_NA",
+	"INVALID_VALUE",
+	"MWAIT_INSTRUCTION",
+	"MONITOR_TRAP_FLAG",
+	"INVALID_VALUE",
+	"MONITOR_INSTRUCTION",
+	"PAUSE_INSTRUCTION",
+	"MCE_DURING_VMENTRY",
+	"INVALID_VALUE",
+	"TPR_BELOW_THRESHOLD",
+	"APIC_ACCESS",
+	"VIRTUALIZED_EOI_NA",
+	"GDTR_IDTR",
+	"LDTR_TR",
+	"EPT_VIOLATION",
+	"EPT_MISCONFIG",
+	"INVEPT",
+	"RDTSCP_NA",
+	"PREEMPTION_TIMER",
+	"INVVPID",
+	"WBINVD",
+	"XSETBV",
+	"APIC_WRITE",
+	"RDRAND",
+	"INVPCID",
+	"VMFUNC",
+	"ENCLS"
+	"RDSEED",
+	"PML_FULL",
+	"XSAVES_NA",
+	"XRESTORE_NA",
+	"INVALID_VALUE",
+	"SPP_RELATED_EVENT_NA",
+	"UM_WAIT_NA",
+	"TPAUSE_NA"
+};
+//End : CMPE283 Assignment 2
+
 /*
  * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't need to be
  * aligned to sizeof(unsigned long) because it's not accessed via bitops.
@@ -1497,12 +1571,56 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
 
+	//Declarations Start : CMPE 283 Assignment 2
+       extern uint64_t total_exits;
+       extern uint64_t exit_freq[69];
+       int i;
+       //Declarations End : CMPE283 Assignment 2
+     
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
 
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
-	kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
+//Implementation Start : CMPE 283 Assignment 2
+       
+
+	if(eax == 0x4ffffffff){
+	     kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, false);
+	     eax = total_exits;
+	     printk(KERN_INFO "---------------------------------------------------------------------");
+	     printk(KERN_INFO "Total Exits : %llu\n", total_exits);
+             printk(KERN_INFO "---------------------------------------------------------------------");
+	}
+	else if(eax== 0x4fffffffd){
+	     
+	     kvm_cpuid(vcpu,&eax,&ebx,&ecx,&edx,true);
+	     printk(KERN_INFO "\Exit Number\t\t\t\t\t\t\t Exit Name \t\t\t\t\t Exit Frequency");
+	     printk(KERN_INFO "---------------------------------------------------------------------");
+	     
+	     for(i=0; i<69; i++){
+	     	if((strstr(exit_name[i], "INVALID_VALUE") == NULL) && (strstr(exit_name[i], "_NA") == NULL)){
+	     	printk(KERN_INFO "\t%u \t\t\t\t %-30s \t\t\t\t%llu\n", i, exit_name[i],exit_freq[ecx]);
+	        }
+	     }
+	     if((int) ecx > -1 && (int)ecx < 69 && (strstr(exit_name[ecx],"_NA")==NULL) && (strstr(exit_name[ecx],"INVALID_VALUE")==NULL)){
+	     	eax = exit_freq[ecx];
+	     }
+	     else if((int) ecx > -1 && (int)ecx < 69 && (strstr(exit_name[ecx],"_NA")!=NULL)){
+		eax = 0x00000000;
+		eax = 0x00000000;
+		eax = 0x00000000;
+		eax = 0x00000000;
+	    } 
+	    else {
+	    	eax = 0x00000000;
+		eax = 0x00000000;
+		eax = 0x00000000;
+		eax = 0xFFFFFFFF; 
+	    }
+	}
+//Implementation End : CMPE283 Assignment 2
+
 	kvm_rax_write(vcpu, eax);
 	kvm_rbx_write(vcpu, ebx);
 	kvm_rcx_write(vcpu, ecx);
