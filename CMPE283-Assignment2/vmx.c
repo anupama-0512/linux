@@ -6276,7 +6276,7 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
 		       vmcs_read16(VIRTUAL_PROCESSOR_ID));
 }
 
-//Declaration Start: CMPE283 Assignment 2
+//Declaration Start:CMPE283 Assignment 2
 uint64_t total_exits;
 
 uint64_t exit_freq[69] = {0};

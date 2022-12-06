@@ -26,7 +26,7 @@
 #include "trace.h"
 #include "pmu.h"
 
-//Start : CMPE283 Assignment 2
+//Start :CMPE283 Assignment 2
 static char exit_name[69][100] = {
 	"EXCEPTION_NMI",
 	"EXCEPTION_INTERRUPT",
