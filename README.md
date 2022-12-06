@@ -60,6 +60,47 @@ IA32_VMX_PROCBASED_CTLS2 0x48B IA32_VMX_PROCBASED_CTLS3 0x492
 
 # Assignment 2
 
+## Assignment 2: Instrumentation via hypercall
+
+Your assignment is to modify the CPUID emulation code in KVM to report back additional information 
+when special CPUID leaf nodes are requested.
+
+For CPUID leaf node %eax=0x4FFFFFFD:
+◦Return the high 32 bits of the total time spent processing all exits in %ebx
+◦Return the low 32 bits of the total time spent processing all exits in %ecx
+▪%ebx and %ecx return values are measured in processor cycles, across all VCPUs
+
+
+For CPUID leaf node %eax=0x4FFFFFFF:
+◦Return the time spent processing the exit number provided (on input) in %ecx
+▪Return the high 32 bits of the total time spent for that exit in %ebx
+▪Return the low 32 bits of the total time spent for that exit in %ecx
+
+## Question 1
+
+Anupama Ponukumati
+
+## Question 2
+
+Describe in detail the steps you used to complete the assignment.
+
+Pre-requisite : 
+
+Google Cloud Platform, create a VM as done in assignment 1
+
+Instructions Step by step:
+
+* Initial Setup .
+* Build environment https://wiki.ubuntu.com/Kernel/BuildYourOwnKernel.
+* Fork GitHub: git clone https://github.com/torvalds/linux.git. to your repo.
+* Clone the Kernel code from personal repository into GCP VM 
+* Kernel Code Compilation : 
+uname -a 
+cp /boot/config-5.8.0-43-generic ./.config make oldconfig make -j 2 modules && make -j 2 && sudo make modules_install && sudo make install reboot 
+* Verify the updated Linux version: uname -a
+
+
+
 
 
 # Assignment 3
