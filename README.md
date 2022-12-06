@@ -134,6 +134,10 @@ cp /boot/config-5.8.0-43-generic ./.config make oldconfig make -j 2 modules && m
 
 ### Output
 
+![Screenshot4] (Output2/image1.png)
+
+![Screenshot5] (Output2/image2.png)
+
 
 
 
