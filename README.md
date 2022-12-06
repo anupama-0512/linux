@@ -65,13 +65,13 @@ IA32_VMX_PROCBASED_CTLS2 0x48B IA32_VMX_PROCBASED_CTLS3 0x492
 Your assignment is to modify the CPUID emulation code in KVM to report back additional information 
 when special CPUID leaf nodes are requested.
 
-For CPUID leaf node %eax=0x4FFFFFFD:
+* For CPUID leaf node %eax=0x4FFFFFFD:
 ◦Return the high 32 bits of the total time spent processing all exits in %ebx
 ◦Return the low 32 bits of the total time spent processing all exits in %ecx
 ▪%ebx and %ecx return values are measured in processor cycles, across all VCPUs
 
 
-For CPUID leaf node %eax=0x4FFFFFFF:
+* For CPUID leaf node %eax=0x4FFFFFFF:
 ◦Return the time spent processing the exit number provided (on input) in %ecx
 ▪Return the high 32 bits of the total time spent for that exit in %ebx
 ▪Return the low 32 bits of the total time spent for that exit in %ecx
@@ -98,6 +98,45 @@ Instructions Step by step:
 uname -a 
 cp /boot/config-5.8.0-43-generic ./.config make oldconfig make -j 2 modules && make -j 2 && sudo make modules_install && sudo make install reboot 
 * Verify the updated Linux version: uname -a
+
+* Install Make and GCC
+* Executed the following commands - 
+
+        * make oldconfig
+        * make prepare
+        * make -j 8 module
+        * make -j 8
+        * sudo make INSTALL_MOD_STRIP=1 modules_install
+        * sudo make install
+        * uname -a
+        * sudo reboot
+        * uname -a
+        * make
+        * lsmod | grep cmpe283
+        * Demsg
+
+* Make changes to cpuid.c and vmx.c. (Added the code)
+
+* To avoid erros Install boot, BzImage and disable the below setting :
+    scripts/config --disable SYSTEM_TRUSTED_KEYS
+    scripts/config --disable SYSTEM_REVOCATION_KEYS
+       
+ * Build the code 
+      * sudo make modules 
+      * sudo make modules_install 
+      * sudo make install 
+
+* Use sudo apt-get install virt-manager to install virt-manager
+* Create a nested virtual machine with virt-manager.
+* Install gcc: https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/
+* Compile test file: gcc test.c
+* Check the output of gcc test.c
+
+### Output
+
+
+
+
 
 
 
