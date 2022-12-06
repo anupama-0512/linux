@@ -124,7 +124,13 @@ cp /boot/config-5.8.0-43-generic ./.config make oldconfig make -j 2 modules && m
  * Build the code 
       * sudo make modules 
       * sudo make modules_install 
-      * sudo make install 
+     
+ 
+  * Load the built modules:
+
+        * sudo modprobe kvm
+        * sudo modprobe kvm_intel
+        
 
 * Use sudo apt-get install virt-manager to install virt-manager
 * Create a nested virtual machine with virt-manager.
