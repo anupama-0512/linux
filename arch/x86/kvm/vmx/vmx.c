@@ -5233,7 +5233,6 @@ static int handle_io(struct kvm_vcpu *vcpu)
 	unsigned long exit_qualification;
 	int size, in, string;
 	unsigned port;
-
 	exit_qualification = vmx_get_exit_qual(vcpu);
 	string = (exit_qualification & 16) != 0;
 
@@ -6282,7 +6281,10 @@ uint64_t total_exits;
 uint64_t exit_freq[69] = {0};
 //Declaration End: CMPE283 Assignment 2
 //
-
+//Declaration Start: CMPE283 Assignment 3
+ uint64_t exit_cpu_countwise_time[69]={0};
+ uint64_t total_cpu_exit_time;
+//Declaration End: CMPE283 Assignment 3
 
 /*
  * The guest has exited.  See if we can fix it or if we need userspace
@@ -6295,6 +6297,13 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	u32 vectoring_info = vmx->idt_vectoring_info;
 	u16 exit_handler_index;
 
+	//Implementation Start: CMPE283 Assignment 3
+	int return_exit_handler=0;
+	uint64_t cpu_cycles_before_exit;
+	uint64_t cpu_cycles_after_exit;
+
+	//Implementation End: CMPE283 Assignment 3
+	
 	//Implementation Start: CMPE283 Assignment 2
         total_exits++;
         //Implementation End: CMPE283 Assignment 2
@@ -6462,6 +6471,14 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 	if (!kvm_vmx_exit_handlers[exit_handler_index])
 		goto unexpected_vmexit;
 
+	//Implementation Start : CMPE283 Assignment 3
+	cpu_cycles_before_exit = rdtsc();
+        return_exit_handler= kvm_vmx_exit_handlers[exit_handler_index](vcpu);
+        cpu_cycles_after_exit = rdtsc();
+        exit_cpu_countwise_time[exit_handler_index] =  cpu_cycles_after_exit - cpu_cycles_before_exit;
+        //Implementation End : CMPE283 Assignment 3
+	
+
 	return kvm_vmx_exit_handlers[exit_handler_index](vcpu);
 
 unexpected_vmexit:
@@ -6479,6 +6496,22 @@ unexpected_vmexit:
 
 static int vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
 {
+//Implementation Start : CMPE283 Assignment 3
+	uint64_t cpu_cycles_before_exit;
+	uint64_t cpu_cycles_after_exit;
+	uint64_t cpu_cycle_count;
+	int ret;
+	
+	cpu_cycles_before_exit = rdtsc();
+
+	ret = __vmx_handle_exit(vcpu, exit_fastpath);
+
+	cpu_cycles_after_exit = rdtsc();
+	cpu_cycle_count = cpu_cycles_after_exit - cpu_cycles_before_exit;
+	total_cpu_exit_time = total_cpu_exit_time + cpu_cycle_count;
+	//Implementation End : CMPE283 Assignment 3
+	
+
 	int ret = __vmx_handle_exit(vcpu, exit_fastpath);
 
 	/*

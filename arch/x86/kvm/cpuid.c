@@ -1576,7 +1576,15 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
        extern uint64_t exit_freq[69];
        int i;
        //Declarations End : CMPE283 Assignment 2
-     
+    
+      //Declarations Start : CMPE 283 Assignment 3
+       
+       uint64_t total_cpu_exit_time;
+       uint64_t exit_cpu_countwise_time[69];
+       uint64_t per_exit_time=0;
+       //Declarations End : CMPE283 Assignment 3
+
+
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
 
@@ -1621,6 +1629,64 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	}
 //Implementation End : CMPE283 Assignment 2
 
+
+	//Implementation Start: CMPE283 Assignment 3
+
+
+	else if(eax == 0x4FFFFFFE){
+		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
+		printk(KERN_INFO "-------------------------------------------------------------------------------------------");
+		printk(KERN_INFO "Total Exits Time(Cycle) :%llu\n",total_cpu_exit_time);
+
+		ebx = (u32)(total_cpu_exit_time>>32);
+		ecx = (u32)(total_cpu_exit_time & 0xFFFFFFFF);
+		printk(KERN_INFO "Total Exits Time(CPU Cycles) spent : Value of EBX :%u\n",ebx);
+		printk(KERN_INFO "Total Exits Time(CPU Cycles) spent : Value of ECX :%u\n",ecx);
+		printk(KERN_INFO "-------------------------------------------------------------------------------------------");
+
+	}
+	else if(eax == 0x4FFFFFFC){
+		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
+		//total time spent - Exit countwise
+		printk(KERN_INFO "\tExit_Name\t\t\t\t\tExit No\t\tExit_cpu_countwise_Time");
+		printk(KERN_INFO "-------------------------------------------------------------------------------------------");
+
+		for(i=0; i<69; i++){
+		     	if((strstr(exit_name[i], "INVALID_VALUE") == NULL) && (strstr(exit_name[i], "_NA") == NULL)){
+		     	printk(KERN_INFO "\t%u \t\t\t\t %-30s \t\t\t\t%llu\n", i, exit_name[i],exit_cpu_countwise_time[i]);
+	        }
+	       }
+		 if((int) ecx > -1 && (int)ecx < 69 && (strstr(exit_name[ecx],"_NA")==NULL) && (strstr(exit_name[ecx],"INVALID_VALUE")==NULL)){
+			printk(KERN_INFO "Total Exits Time(CPU Cycles) spent : value of ecx :%u\n",ecx);
+			printk(KERN_INFO "Total Exits Time(CPU Cycles) spent : exit_name[ecx] :%s\n",exit_name[ecx]);
+			printk(KERN_INFO "Total Exits Time(CPU Cycles) spent : exit_cpu_countwise_time[ecx] :%llu\n",exit_cpu_countwise_time[ecx]);
+			per_exit_time=exit_cpu_countwise_time[ecx];
+
+			ebx = (u32)(per_exit_time>>32);
+			ecx = (u32)(per_exit_time&0xFFFFFFFF);
+
+		}
+		 else if((int) ecx > -1 && (int)ecx < 69 && (strstr(exit_name[ecx],"_NA")!=NULL)){
+			eax= 0x00000000;
+			ebx= 0x00000000;
+			ecx= 0x00000000;
+			edx= 0x00000000;
+		}
+		else{
+			eax= 0x00000000;
+			ebx= 0x00000000;
+			ecx= 0x00000000;
+			edx= 0xFFFFFFFF;
+		}
+
+	}
+	else{
+		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
+	}
+
+//Implementation End: CMPE283 Assignment 3
+
+	
 	kvm_rax_write(vcpu, eax);
 	kvm_rbx_write(vcpu, ebx);
 	kvm_rcx_write(vcpu, ecx);
