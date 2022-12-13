@@ -199,4 +199,10 @@ Pre-requisite : Begin with the Assignment-2 configuration.
 * The command "cpuid -l 0x4FFFFFFF -s exit reason" can be used to determine the total time spent processing the exit specified in exit reason.
 
 
+## Question 3
 
+ No, the number of exits is increasing at an unpredictably high rate. Other VM instructions/operations, such as EPT violation, RDRAND, I/O instructions, RDTSCP, and so on, cause exits to be executed. After the first build, rebooting, and using KVM to enter the nested VM, there were 156,411 exits. Because there may be a shutdown time with a hardware disruption in between, this may not be very accurate.
+ Frequency of the time spent depends on the type of exit.The number of exits tends to increase if more proveleged operations are performed by the system
+
+
+![Screenshot6](outputimage3.png)
