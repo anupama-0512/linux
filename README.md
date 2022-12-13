@@ -148,6 +148,55 @@ cp /boot/config-5.8.0-43-generic ./.config make oldconfig make -j 2 modules && m
 
 
 
+# Assignment 3
+
+## Assignment 3: Instrumentation via hypercall Contd
+
+Your assignment is to modify the CPUID emulation code in KVM to report back additional information 
+when special CPUID leaf nodes are requested.
+
+* For CPUID leaf node %eax=0x4FFFFFFE:
+◦Return the number of exits for the exit number provided (on input) in %ecx
+▪This value should be returned in %eax 
+
+* For CPUID leaf node %eax=0x4FFFFFFF:
+◦Return the time spent processing the exit number provided (on input) in %ecx
+▪Return the high 32 bits of the total time spent for that exit in %ebx
+▪Return the low 32 bits of the total time spent for that exit in %ecx
+
+## Question 1
+
+Anupama Ponukumati
+
+## Question 2
+
+Describe in detail the steps you used to complete the assignment.
+
+Pre-requisite : Begin with the Assignment-2 configuration.
+
+* Make the changes to the cpuid.c and vmx.c files as below:
+
+* Return the high 32 bits of the total time spent processing all exits in percent ebx and the low 32 bits of the total time spent processing all exits in percent ecx when the leafnode eax value is 0x4FFFFFFE. This is accomplished by declaring a variable to store the total time and then adding the time spent processing each exit (calculated by reading the timestamp before and after the exit) to this total time.
+
+* Return the time spent processing that specific exit when the leafnode eax value is 0x4FFFFFFF and an exit number is provided in ecx as input. Return the high 32 bits of the total time spent for that exit in percent ebx and the low 32 bits of the total time spent in percent ecx. This is accomplished by declaring an array for each exit and storing the time spent on each exit in the corresponding array element.
+
+* Build the code - 
+    * Build the code
+    * sudo make modules
+    * sudo make modules_install
+    * sudo make install
+    * Reboot
+    
+* Next Execute the following commands - 
+    * make -j 4 modules
+    * make INSTALL_MOD_STRIP=1 modules_install && make install
+    * To see if the module is already loaded, use "lsmod | grep kvm."
+    * rmmod kvm_intel; rmmod kvm
+    
+* Now open the nexted VM, similar to Assignment 2 and run the following
+
+* Now, in the terminal, type "cpuid -l 0x4FFFFFFE" to see how much time was spent processing all exits in ebx and ecx.
+* The command "cpuid -l 0x4FFFFFFF -s exit reason" can be used to determine the total time spent processing the exit specified in exit reason.
 
 
 
